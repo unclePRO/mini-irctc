@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}E-Ticket — PNR {{ booking.pnr }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+
+    <!-- Top Action Ribbon (Hidden when printing) -->
+    <div class="flex items-center justify-between no-print">
+        <a href="{{ url_for('my_bookings') }}" class="text-xs font-bold text-sky-700 hover:text-sky-900 flex items-center gap-1">
+            ← Back to My Bookings
+        </a>
+
+        <div class="flex items-center gap-3">
+            {% if booking.booking_status == 'CONFIRMED' %}
+                <form action="{{ url_for('cancel_ticket', pnr=booking.pnr) }}" method="POST"
+                      onsubmit="return confirm('Are you sure you want to cancel PNR {{ booking.pnr }}? Capacity will be restored and status marked as CANCELLED.');">
+                    <button type="submit"
+                            class="px-3.5 py-2 bg-rose-50 border border-rose-300 text-rose-700 hover:bg-rose-100 font-bold text-xs rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Cancel Booking
+                    </button>
+                </form>
+            {% endif %}
+
+            <button onclick="window.print()"
+                    class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-lg shadow transition flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                Print E-Ticket
+            </button>
+        </div>
+    </div>
+
+    <!-- Official Styled E-Ticket Card -->
+    <div class="ticket-container bg-white border-2 border-slate-300 rounded-xl p-6 sm:p-8 shadow-sm text-slate-800">
+        <!-- E-Ticket Header -->
+        <div class="ticket-header border-b-2 border-slate-800 pb-4 mb-5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="text-3xl">🚆</div>
+                <div>
+                    <h2 class="text-xl font-black tracking-tight text-slate-900 uppercase">Indian Railways / IRCTC Mini</h2>
+                    <p class="text-[11px] text-slate-500 font-semibold">ELECTRONIC RESERVATION SLIP (ERS) • DBMS COURSE PROJECT</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="text-xs uppercase font-extrabold text-slate-400 block">Status</span>
+                <span class="px-2.5 py-1 rounded text-xs font-black uppercase tracking-wider {% if booking.booking_status == 'CONFIRMED' %}bg-emerald-100 text-emerald-800 border border-emerald-300{% else %}bg-rose-100 text-rose-800 border border-rose-300{% endif %}">
+                    {{ booking.booking_status }}
+                </span>
+            </div>
+        </div>
+
+        <!-- PNR & Train Metadata Bar -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-slate-50 border border-slate-200 rounded-lg text-xs mb-6">
+            <div>
+                <span class="text-slate-400 font-bold block uppercase text-[10px]">PNR Number</span>
+                <span class="text-base font-black text-slate-900 font-mono">{{ booking.pnr }}</span>
+            </div>
+            <div>
+                <span class="text-slate-400 font-bold block uppercase text-[10px]">Train No. &amp; Name</span>
+                <span class="font-bold text-slate-800 text-xs">{{ booking.train_number }} / {{ booking.train_name }}</span>
+            </div>
+            <div>
+                <span class="text-slate-400 font-bold block uppercase text-[10px]">Date of Journey</span>
+                <span class="font-bold text-slate-800 text-xs">{{ booking.journey_date }}</span>
+            </div>
+            <div>
+                <span class="text-slate-400 font-bold block uppercase text-[10px]">Class &amp; Quota</span>
+                <span class="font-bold text-slate-800 text-xs">{{ booking.class_code }} ({{ booking.class_name }})</span>
+            </div>
+        </div>
+
+        <!-- Journey Stations & Timing -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-5 border-b border-slate-200 text-xs sm:text-sm">
+            <div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+                <span class="text-slate-400 uppercase font-bold text-[10px] block">From / Boarding</span>
+                <div class="font-extrabold text-slate-900">{{ booking.from_station_name }} ({{ booking.from_station_code }})</div>
+                <div class="text-xs text-slate-500 mt-0.5">Scheduled Dep: <span class="font-medium text-slate-700">{{ booking.departure_time or 'Origination' }}</span></div>
+            </div>
+            <div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+                <span class="text-slate-400 uppercase font-bold text-[10px] block">To / Destination</span>
+                <div class="font-extrabold text-slate-900">{{ booking.to_station_name }} ({{ booking.to_station_code }})</div>
+                <div class="text-xs text-slate-500 mt-0.5">Scheduled Arr: <span class="font-medium text-slate-700">{{ booking.arrival_time or 'Terminus' }}</span></div>
+            </div>
+        </div>
+
+        <!-- Passenger Details Table (Weak entity: booking_passengers) -->
+        <div class="mt-6">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Passenger Details (<code class="text-[11px] text-sky-800">booking_passengers</code>)</h3>
+                <span class="text-[11px] text-slate-400">{{ passengers|length }} Passenger(s)</span>
+            </div>
+
+            <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="bg-slate-100 border-b border-slate-200 font-bold text-slate-600">
+                            <th class="py-2.5 px-3 text-center w-12">#</th>
+                            <th class="py-2.5 px-3">Passenger Name</th>
+                            <th class="py-2.5 px-3 text-center">Age</th>
+                            <th class="py-2.5 px-3 text-center">Gender</th>
+                            <th class="py-2.5 px-3 text-right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for p in passengers %}
+                            <tr>
+                                <td class="py-2.5 px-3 text-center font-bold text-slate-400">{{ p.passenger_seq }}</td>
+                                <td class="py-2.5 px-3 font-semibold text-slate-800">{{ p.passenger_name }}</td>
+                                <td class="py-2.5 px-3 text-center text-slate-600">{{ p.age }}</td>
+                                <td class="py-2.5 px-3 text-center text-slate-600">{{ p.gender }}</td>
+                                <td class="py-2.5 px-3 text-right font-extrabold {% if booking.booking_status == 'CONFIRMED' %}text-emerald-700{% else %}text-rose-600{% endif %}">
+                                    {{ booking.booking_status }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Fare Breakdown & Account Details -->
+        <div class="mt-6 pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between text-xs gap-3">
+            <div class="text-slate-500 space-y-0.5">
+                <div>Booked By: <span class="font-semibold text-slate-700">{{ booking.booked_by_name }} ({{ booking.booked_by_email }})</span></div>
+                <div>Booked On: <span class="text-slate-600">{{ booking.booking_date }}</span></div>
+            </div>
+            <div class="text-right">
+                <span class="text-slate-500 font-medium">Total Ticket Fare:</span>
+                <span class="text-lg font-black text-slate-900 ml-2">₹{{ "%.2f"|format(booking.total_fare) }}</span>
+            </div>
+        </div>
+
+        <!-- Disclaimer / Footer Note -->
+        <div class="mt-6 pt-3 border-t border-slate-100 text-[10px] text-slate-400 leading-normal">
+            * Note: This is a computer-generated demonstration reservation slip for a DBMS course project. Capacity is booked per entire train run without seat/berth numbers per design assumptions. Keep a valid government ID during travel.
+        </div>
+    </div>
+
+</div>
+{% endblock %}

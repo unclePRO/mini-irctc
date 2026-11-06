@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Book Ticket — Train {{ train.train_number }} ({{ train.train_name }}){% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+
+    <!-- Booking Header Card -->
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-sky-700">Passenger Reservation</span>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">
+                    {{ train.train_number }} — {{ train.train_name }}
+                </h1>
+                <p class="text-xs text-slate-500 mt-1">
+                    Journey Date: <span class="font-bold text-slate-700">{{ train_run.journey_date }}</span>
+                    • Travel Class: <span class="font-bold text-sky-800">{{ travel_class.class_code }} ({{ travel_class.class_name }})</span>
+                </p>
+            </div>
+            <div class="text-right sm:text-right">
+                <span class="text-xs text-slate-500 uppercase font-semibold">Available Seats</span>
+                <div class="text-xl font-extrabold text-emerald-600">{{ available_seats }} Seats</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 text-xs sm:text-sm">
+            <div>
+                <span class="text-slate-400 block text-xs uppercase font-bold">Boarding Station</span>
+                <span class="font-semibold text-slate-800">{{ from_station.station_name }} ({{ from_station.station_code }})</span>
+            </div>
+            <div class="sm:text-center">
+                <span class="text-slate-400 block text-xs uppercase font-bold">Destination Station</span>
+                <span class="font-semibold text-slate-800">{{ to_station.station_name }} ({{ to_station.station_code }})</span>
+            </div>
+            <div class="sm:text-right">
+                <span class="text-slate-400 block text-xs uppercase font-bold">Base Fare per Passenger</span>
+                <span class="font-bold text-emerald-700 text-base">₹{{ "%.2f"|format(class_capacity.base_fare) }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Form Card -->
+    <form action="{{ url_for('book_ticket') }}" method="POST" id="booking-form" class="space-y-6">
+        <!-- Hidden Inputs for Route Context -->
+        <input type="hidden" name="run_id" value="{{ train_run.run_id }}">
+        <input type="hidden" name="class_code" value="{{ travel_class.class_code }}">
+        <input type="hidden" name="from_station" value="{{ from_station.station_code }}">
+        <input type="hidden" name="to_station" value="{{ to_station.station_code }}">
+        <input type="hidden" id="base-fare-value" value="{{ class_capacity.base_fare }}">
+
+        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">Passenger Information</h2>
+                    <p class="text-xs text-slate-500">Add up to 6 passengers for a single PNR transaction.</p>
+                </div>
+                <button type="button" id="add-passenger-btn"
+                        class="px-3.5 py-1.5 bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-300 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    + Add Passenger
+                </button>
+            </div>
+
+            <!-- Dynamic Passengers Container -->
+            <div id="passengers-container" class="space-y-3">
+                <!-- Passenger 1 (Default Row) -->
+                <div class="passenger-row p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                        <span class="passenger-num font-semibold text-slate-700">Passenger 1</span>
+                        <button type="button" class="remove-passenger-btn hidden text-rose-600 hover:text-rose-800 text-sm font-medium flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            Remove
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Full Name</label>
+                            <input type="text" name="passenger_name[]" required placeholder="e.g. Rahul Sharma"
+                                   class="w-full px-3 py-2 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Age</label>
+                            <input type="number" name="passenger_age[]" min="1" max="120" required placeholder="Age (1-120)"
+                                   class="w-full px-3 py-2 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Gender</label>
+                            <select name="passenger_gender[]" required
+                                    class="w-full px-3 py-2 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fare Summary & Submission Card -->
+        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <span class="text-xs text-slate-500 uppercase font-semibold">Total Fare Summary</span>
+                <div class="flex items-baseline gap-2 mt-0.5">
+                    <span id="total-fare-display" class="text-2xl font-extrabold text-slate-900">₹{{ "%.2f"|format(class_capacity.base_fare) }}</span>
+                    <span class="text-xs text-slate-500">(for <span id="passenger-count" class="font-bold text-slate-700">1</span> passenger(s))</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-0.5">Final fare verified and committed atomically in PostgreSQL transaction.</p>
+            </div>
+
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <a href="{{ url_for('search_trains', from_station=from_station.station_code, to_station=to_station.station_code, journey_date=train_run.journey_date) }}"
+                   class="px-4 py-2.5 border border-slate-300 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 transition text-center w-1/2 sm:w-auto">
+                    Cancel
+                </a>
+                <button type="submit"
+                        class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-md hover:shadow-lg transition text-center w-1/2 sm:w-auto flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    Confirm &amp; Book
+                </button>
+            </div>
+        </div>
+    </form>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

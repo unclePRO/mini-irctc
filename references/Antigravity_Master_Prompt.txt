@@ -1,0 +1,187 @@
+# ANTIGRAVITY MASTER PROMPT - RAILWAY RESERVATION SYSTEM
+# Updated for professor's ER-modeling, ER-to-relational mapping, and SQL PPTs
+
+## 1. Project goal
+Build a complete but simple Railway Reservation System for a second-year B.Tech DBMS course project. It should resemble a simplified IRCTC-style website but use fictional demonstration data. Emphasize correct ER modeling, conversion to relations, normalization, SQL queries, integrity constraints, transactions and a working end-to-end application.
+
+Keep the implementation easy for students to understand and explain in a DBMS viva. Avoid unnecessary frameworks, complexity, advanced features and separate API services. Do not add unrequested features.
+
+## 2. Required technology stack
+- Development environment: Google Antigravity
+- Frontend: HTML, CSS, vanilla JavaScript and Jinja2 templates
+- Backend: Python Flask, with server-rendered routes and HTML forms
+- Database: PostgreSQL
+- Python database connection: psycopg, executing direct parameterized SQL (NO ORM)
+- Version control: Git / GitHub
+- Public deployment: Render for Flask and, if available on a suitable free plan, Render PostgreSQL
+- ER diagram: editable diagrams.net / draw.io file (.drawio) and an image export
+
+Do NOT introduce React, Next.js, FastAPI, separately hosted REST APIs, SQLAlchemy, Docker, microservices, live IRCTC integration, real payment gateways or other paid/unnecessary dependencies. JavaScript supports interactivity; Flask/PostgreSQL remain the source of truth for bookings, fares and availability.
+
+## 3. Reference PPTs - IMPORTANT
+I will also provide these three professor-supplied PPT files:
+1. S_ER Model.pptx
+2. Conversion of ERD to Relational Model_1(1).pptx
+3. SQL_Chapter_DB_1(2).pptx
+
+Read all three if they are accessible in the Antigravity workspace. Treat the first two as the reference for ER modeling and ER-to-relational conversion, and the third as the reference for our SQL topics and course-level emphasis.
+
+If you cannot access any of these PPTs, explicitly say which ones you could not read. Do not claim to have followed unseen slides. Ask for an accessible exported PDF/text version if needed. Do not replace our lecturer's conventions with invented rules.
+
+## 4. Website features (core requirements)
+A. Users
+- Register, log in and log out using securely hashed passwords and simple sessions.
+- Require login to make bookings, view full booking history or cancel one's own bookings.
+
+B. Train search and information
+- Search trains by source station, destination station and journey date.
+- Display train numbers/names, ordered intermediate stations, departure and arrival schedules, and journey duration.
+- Support travel classes such as SL, 3AC and 2AC.
+- Show date-wise, class-wise seat availability and fares.
+
+C. Booking
+- Book multiple passengers under a single booking and unique PNR.
+- Validate passenger information and capacity in the backend.
+- Save booking and passenger rows together in an atomic PostgreSQL transaction.
+- Prevent overbooking even when two requests try to book the last places concurrently.
+- Compute actual fare on the backend; JavaScript may only display a preview.
+
+D. Manage bookings
+- Enquire about limited PNR/booking status without exposing personal passenger data publicly.
+- Show a logged-in user's booking history and full ticket details.
+- Cancel an authorized booking; retain the record with CANCELLED status and restore capacity.
+- Display a printable e-ticket using HTML and print-friendly CSS (no generated PDF necessary).
+
+Optional after the core is working: a simple admin panel to manage trains/stations/routes and show booking, cancellation and fare summaries. Restrict admin access.
+
+## 5. ER diagram - follow S_ER Model.pptx
+Design an ER conceptual model FIRST, rather than making SQL tables and drawing a diagram afterward.
+
+Use the ER ideas and conventions taught in the professor's S_ER Model.pptx, including as applicable:
+- Strong/regular entities, weak entities only if genuinely justified
+- Attributes: simple/composite, multivalued and derived, when appropriate
+- Entity identifiers / key attributes
+- Relationships, their degree, and relationship attributes
+- Cardinality ratios (1:1, 1:N, M:N)
+- Total/partial participation and minimum-maximum constraints where useful
+- Proper distinction between an entity, an attribute and a relationship
+
+Do not invent weak entities or multivalued attributes solely to showcase a rule. Explain the meaning and participation of each actual relationship.
+
+Generate a real editable draw.io XML file at:
+  docs/Railway_Reservation_ER_Diagram.drawio
+Also export an image as:
+  docs/ER_Diagram.png  (or docs/ER_Diagram.svg)
+The .drawio file must open and be editable at https://app.diagrams.net. Do not substitute Mermaid, a picture only or a text description. Verify that the ER diagram accurately represents the chosen design.
+
+## 6. Explicit ER-to-relational conversion - follow conversion PPT
+Show the mapping from the ER model to relational schemas BEFORE writing CREATE TABLE statements. Follow the seven ER-to-relational mapping steps taught in Conversion of ERD to Relational Model_1(1).pptx, whenever the corresponding construct occurs:
+
+1. Regular entity: create a relation with its simple attributes and primary key.
+2. Weak entity: create its relation, including the owner's key as a foreign key and the weak entity's partial key as appropriate.
+3. Binary 1:1 relationship: use the appropriate foreign key approach, preferably on the total-participation side; consider the PPT's alternatives where justified.
+4. Binary 1:N relationship: place the one-side's key as a foreign key on the many-side; account for relationship attributes.
+5. Binary M:N relationship: create a separate relationship relation containing the participating keys and relationship attributes.
+6. Multivalued attribute: create a separate relation containing the owner key and the attribute's value/components.
+7. N-ary relationship: create a relationship relation with participating entity keys and relevant relationship attributes.
+
+Only apply steps for constructs that actually exist in the ER diagram. Explicitly identify which mapping rule produced each resulting relation. Show primary keys, candidate keys, foreign keys, composite keys where needed and referential integrity. Make the final relational schema, ER diagram and actual SQL tables mutually consistent.
+
+## 7. Normalization
+For each relation, identify relevant functional dependencies and candidate keys. Verify 1NF, 2NF and 3NF, then aim for BCNF wherever feasible. If a relation stays in 3NF, provide a real, specific justification (such as preserving dependencies that BCNF decomposition would lose). Do not blindly claim that all relations are BCNF.
+
+Aim for approximately 8-10 relations, but add or remove tables as demanded by correct modeling; do not sacrifice normalization to meet an arbitrary number.
+
+Likely entities/relations to consider: Users, Stations, Trains, Train_Stops, Train_Runs, Travel_Classes, Train_Class_Capacity, Bookings and Booking_Passengers. Finalize them based on the actual ER model and functional dependencies.
+
+## 8. SQL - follow SQL_Chapter_DB_1(2).pptx
+This is the main DBMS implementation. Use appropriate SQL constructs from the professor's SQL chapter, not a complicated database abstraction.
+
+MANDATORY - demonstrate with real schema/data and executable queries:
+- DDL: CREATE TABLE and suitable PostgreSQL data types; show ALTER TABLE where meaningful.
+- Constraints: PRIMARY KEY, FOREIGN KEY, UNIQUE, NOT NULL, CHECK, DEFAULT, and suitable referential actions.
+- DML: INSERT, SELECT, UPDATE, and DELETE where appropriate (do not delete booking history when cancelling).
+- Queries: SELECT/FROM/WHERE, DISTINCT, ORDER BY, aliases, comparison and filtering.
+- Joins: INNER JOIN and LEFT JOIN when relevant; join train/station/route/booking tables.
+- Aggregates: COUNT, SUM, AVG, GROUP BY and HAVING with practical booking/occupancy examples.
+- Subqueries: at least one useful nested subquery and one meaningful correlated subquery using EXISTS or NOT EXISTS, where appropriate.
+- VIEW: create at least ONE real, meaningful SQL VIEW (for example, a train booking summary or confirmed-booking overview) and demonstrate querying it. Views are mandatory for this project.
+- Transactions: booking and cancellation must be atomic; commit successful changes and roll back on failure. Use suitable row locking or an equivalent concurrency-safe design to prevent overbooking.
+- Use direct SQL with psycopg placeholders/parameters, never construct SQL by concatenating user input.
+
+OPTIONAL - only if they are simple and genuinely helpful:
+- One window-function query, e.g. RANK() / ROW_NUMBER() for an optional train popularity or booking report. Window functions are NOT required for the core website and are not a main topic in the supplied SQL PPT.
+- One small PostgreSQL trigger with an associated trigger function, e.g. a booking-cancellation audit, ONLY if it serves a real purpose and is easy to explain. The professor's PPT introduces triggers, but they are not essential to our app.
+- Other small SQL features, such as an additional view or a simple index, if useful and understandable.
+
+DO NOT implement merely to showcase syntax:
+- CREATE ASSERTION (PostgreSQL does not implement SQL assertions).
+- Complicated triggers, stored procedures/functions beyond an optional simple trigger function, heavy window-function logic or needless database-side automation.
+
+Create:
+  sql/schema.sql        - CREATE TABLE definitions, constraints, and the mandatory VIEW
+  sql/seed.sql          - realistic fictional Indian railway data, repeatable or with clear reset instructions
+  sql/demo_queries.sql  - clearly labeled executable examples of the SQL topics above, including JOINs, aggregates, GROUP BY/HAVING, nested/correlated subqueries and queries against the VIEW; optional window/trigger demos only if implemented
+
+For any SQL feature not naturally called by a website page, it is fine to demonstrate it in sql/demo_queries.sql instead of artificially adding a new website feature. Keep optional scripts safe and clearly distinguish examples that modify data.
+
+## 9. Simplified railway-booking assumptions
+- Train defines a route; Train_Run denotes operation on a particular journey date.
+- An origin/destination pair is valid only when the destination occurs AFTER the source among ordered train stops.
+- Use per-train-run, per-class capacity. For simplicity, each confirmed passenger occupies one unit of capacity for the FULL train run even when travelling only part of the route. Describe this simplification in README.md.
+- No physical seat numbers or berth allocation, overlapping segment reuse, waiting list, RAC, Tatkal, Premium Tatkal, VIKALP, dynamic fares, refunds, live train data or actual payments.
+- Compute availability from capacity and confirmed passenger reservations.
+- Protect capacity checks and inserts using a correct PostgreSQL transaction/lock strategy.
+- Cancellation marks bookings as CANCELLED instead of deleting the booking.
+
+## 10. Flask, frontend and security
+Keep a single simple Flask web application with Jinja2 server-rendered pages and HTML forms. JavaScript may handle passenger-field addition/removal, client-side validation, fare previews and confirmation dialogs. The server must revalidate all important information.
+
+Include pages/routes for home/search, results, train details and schedules, registration/login/logout, passenger booking, booking confirmation, PNR lookup, history, ticket view, cancellation and optional admin.
+
+Use clear code, helpful comments, secure password hashes, sensible error messages, authenticated/authorized operations, environment variables for DATABASE_URL and SECRET_KEY, basic CSRF protection for state-changing requests, and safe database connection management. Use psycopg direct SQL (no ORM). Do not expose passwords or sensitive booking records publicly.
+
+## 11. Minimal project files and technical documentation
+Produce a beginner-friendly directory structure with:
+- app.py or similarly simple Flask entry point
+- templates/ and static/css/, static/js/
+- sql/schema.sql, sql/seed.sql, sql/demo_queries.sql
+- docs/Railway_Reservation_ER_Diagram.drawio and its PNG/SVG export
+- requirements.txt, .env.example, .gitignore, README.md
+- Only additional files truly needed to run/test/deploy the application
+
+README.md should provide simple Windows setup and run instructions, what the files do, database initialization, test account details, modeling assumptions, database credentials via environment variables, and straightforward deployment steps.
+
+CRITICAL EXCLUSION: Do NOT create the formal DBMS project report, report draft, DBMS_Concepts_Implemented.md, or any other report/concepts-implemented Markdown file. The team will prepare the formal report and DBMS-concept explanations separately outside Antigravity. The docs/ folder should hold only ER diagram assets, not those report files. Do NOT prepare a PPT or assign individual team responsibilities. Do not propose a timeline.
+
+## 12. Deployment - keep it simple
+Prepare the existing Flask application for public hosting via GitHub and Render, without changing frameworks or creating separate API services. Use Gunicorn, the necessary Python dependencies and an appropriate start command. For the database, use Render PostgreSQL only if a suitable free instance is available; verify the current availability/limitations at deployment time and flag any required alternative before changing the architecture.
+
+Use DATABASE_URL and SECRET_KEY environment variables. Never commit secrets. Do not rely on the developer laptop remaining online. Mention any free-tier sleeping/expiry restrictions accurately in README.md.
+
+## 13. Actual testing and final checks
+Run and verify on real PostgreSQL data:
+- Registration/login/logout and authorization
+- Train search with correct route ordering and journey date
+- Travel classes, fare lookup and available capacity
+- Multi-passenger booking and unique PNR
+- Insufficient-capacity rejection, rollback and concurrency/overbooking protection
+- Booking history, PNR enquiry and printable ticket
+- Cancellation and restored capacity
+- Working SQL VIEW and representative joins, aggregates, subqueries
+- Invalid/malicious input handling, forbidden access and database failures
+- Public website availability when deployed
+
+Do not invent passing test results. Fix actual failures, and ensure the final ER diagram, mapping explanation, relational schema, CREATE TABLE definitions and queries all agree.
+
+## 14. Work order (NO dates)
+1. Read the supplied professor PPTs; identify relevant modeling and SQL rules.
+2. Present project requirements, ER conceptual model, mapping-rule explanations and proposed relational schema for review.
+3. Show normalization, functional dependencies and candidate keys.
+4. Generate and verify the editable draw.io ER diagram.
+5. Implement PostgreSQL schema, mandatory VIEW, sample data and demo SQL queries.
+6. Build and test the Flask + PostgreSQL functionality.
+7. Build and connect the HTML/CSS/JavaScript frontend.
+8. Test all functions and prepare the public Render deployment.
+
+Stop after presenting the ER model, relational mapping and normalization for review BEFORE generating the entire application. Once approved, implement incrementally, and keep the source code, diagram and SQL consistent.

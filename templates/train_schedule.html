@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Train {{ train.train_number }} — {{ train.train_name }} Schedule & Route{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header Card -->
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded text-xs font-extrabold bg-sky-100 text-sky-800 tracking-wider">
+                    {{ train.train_number }}
+                </span>
+                <h1 class="text-2xl font-bold text-slate-900">{{ train.train_name }}</h1>
+            </div>
+            <p class="text-sm text-slate-500 mt-1">
+                Route: <span class="font-semibold text-slate-700">{{ train.source_name }} ({{ train.source_station_code }})</span>
+                to <span class="font-semibold text-slate-700">{{ train.dest_name }} ({{ train.destination_station_code }})</span>
+            </p>
+        </div>
+
+        <a href="{{ url_for('index') }}" class="px-4 py-2 border border-slate-300 hover:border-slate-400 bg-white text-slate-700 text-xs font-bold rounded-lg shadow-sm transition self-start md:self-auto">
+            ← Back to Search
+        </a>
+    </div>
+
+    <!-- Stops Table Card -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+            <h2 class="font-bold text-slate-800 text-sm">Ordered Station Stops (<code class="text-xs text-sky-800">train_stops</code> Weak Entity)</h2>
+            <span class="text-xs text-slate-500">{{ stops|length }} Total Stops</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="bg-slate-100/70 border-b border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-600">
+                        <th class="py-3 px-4 text-center w-12">Seq</th>
+                        <th class="py-3 px-4">Station Code</th>
+                        <th class="py-3 px-4">Station Name</th>
+                        <th class="py-3 px-4">City / State</th>
+                        <th class="py-3 px-4 text-center">Arrival</th>
+                        <th class="py-3 px-4 text-center">Departure</th>
+                        <th class="py-3 px-4 text-center">Halt</th>
+                        <th class="py-3 px-4 text-right">Distance (KM)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for stop in stops %}
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-3 px-4 text-center font-bold text-slate-500 text-xs">
+                                {{ stop.stop_sequence }}
+                            </td>
+                            <td class="py-3 px-4 font-extrabold text-sky-700">
+                                {{ stop.station_code }}
+                            </td>
+                            <td class="py-3 px-4 font-semibold text-slate-800">
+                                {{ stop.station_name }}
+                            </td>
+                            <td class="py-3 px-4 text-slate-500 text-xs">
+                                {{ stop.city }}, {{ stop.state }}
+                            </td>
+                            <td class="py-3 px-4 text-center font-medium text-slate-700">
+                                {{ stop.arrival_time or '—' }}
+                            </td>
+                            <td class="py-3 px-4 text-center font-medium text-slate-700">
+                                {{ stop.departure_time or '—' }}
+                            </td>
+                            <td class="py-3 px-4 text-center text-xs text-slate-500">
+                                {% if stop.halt_minutes > 0 %}
+                                    <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">{{ stop.halt_minutes }} min</span>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-right font-medium text-slate-700">
+                                {{ stop.distance_km }} km
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

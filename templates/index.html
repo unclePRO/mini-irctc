@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Search & Book Trains — Railway Reservation System{% endblock %}
+
+{% block content %}
+<div class="space-y-10">
+
+    <!-- Hero & Search Card Section -->
+    <div class="relative bg-gradient-to-br from-sky-900 via-sky-800 to-indigo-950 rounded-2xl p-6 sm:p-10 text-white shadow-xl overflow-hidden">
+        <!-- Background decorative pattern -->
+        <div class="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-sky-500/10 blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-16 -bottom-16 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-3xl relative z-10 mb-8">
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-sky-400/20 text-sky-200 border border-sky-400/30 mb-3">
+                IRCTC Simplified Prototype
+            </span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+                Book Train Tickets & Check Live Seat Availability
+            </h1>
+            <p class="mt-2 text-sky-200 text-sm sm:text-base leading-relaxed">
+                A second-year B.Tech DBMS course implementation backed by direct parameterized PostgreSQL queries, BCNF relations, ACID transactions, and IRCTC-style route ordering.
+            </p>
+        </div>
+
+        <!-- Train Search Form Card -->
+        <div class="bg-white rounded-xl p-5 sm:p-6 text-slate-800 shadow-2xl border border-slate-100">
+            <form action="{{ url_for('search_trains') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Source Station -->
+                <div class="space-y-1.5">
+                    <label for="from_station" class="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                        From Station
+                    </label>
+                    <select id="from_station" name="from_station" required
+                            class="w-full px-3.5 py-2.5 text-sm font-medium border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none bg-slate-50 hover:bg-white transition">
+                        <option value="" disabled selected>Select Origin Station</option>
+                        {% for st in stations %}
+                            <option value="{{ st.station_code }}" {% if request.args.get('from_station') == st.station_code %}selected{% endif %}>
+                                {{ st.station_code }} — {{ st.station_name }} ({{ st.city }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Destination Station -->
+                <div class="space-y-1.5">
+                    <label for="to_station" class="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                        To Station
+                    </label>
+                    <select id="to_station" name="to_station" required
+                            class="w-full px-3.5 py-2.5 text-sm font-medium border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none bg-slate-50 hover:bg-white transition">
+                        <option value="" disabled selected>Select Destination Station</option>
+                        {% for st in stations %}
+                            <option value="{{ st.station_code }}" {% if request.args.get('to_station') == st.station_code %}selected{% endif %}>
+                                {{ st.station_code }} — {{ st.station_name }} ({{ st.city }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Journey Date -->
+                <div class="space-y-1.5">
+                    <label for="journey_date" class="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                        Journey Date
+                    </label>
+                    <input type="date" id="journey_date" name="journey_date" required min="{{ today_str }}" value="{{ request.args.get('journey_date') or today_str }}"
+                           class="w-full px-3.5 py-2.5 text-sm font-medium border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none bg-slate-50 hover:bg-white transition">
+                </div>
+
+                <!-- Search Button -->
+                <div class="flex items-end">
+                    <button type="submit"
+                            class="w-full py-2.5 px-4 bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-bold text-sm rounded-lg shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        Find Trains
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Navigation & Highlight Features -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Feature 1 -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow transition">
+            <div class="w-10 h-10 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-lg mb-4">
+                🔒
+            </div>
+            <h3 class="font-bold text-slate-800 text-base mb-1">Concurrency-Safe Bookings</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">
+                Utilizes PostgreSQL row-level locks (<code class="text-xs bg-slate-100 px-1 py-0.5 rounded text-sky-800">SELECT FOR UPDATE</code>) inside an atomic transaction to eliminate overbooking race conditions.
+            </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow transition">
+            <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-lg mb-4">
+                🗺️
+            </div>
+            <h3 class="font-bold text-slate-800 text-base mb-1">Route Order Validation</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">
+                Validates intermediate station sequence numbers in the <code class="text-xs bg-slate-100 px-1 py-0.5 rounded text-emerald-800">train_stops</code> weak entity relation so passengers can only book in the valid travel direction.
+            </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow transition">
+            <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg mb-4">
+                📊
+            </div>
+            <h3 class="font-bold text-slate-800 text-base mb-1">Mandatory SQL VIEW</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">
+                Includes <code class="text-xs bg-slate-100 px-1 py-0.5 rounded text-indigo-800">v_train_occupancy_summary</code> aggregating booked passengers against class capacities for real-time seat availability.
+            </p>
+        </div>
+    </div>
+
+    <!-- Demonstration Accounts Pill for Viva / Grading -->
+    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Pre-Configured Demo Accounts</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+            <div class="p-3 bg-white border border-slate-200 rounded-lg">
+                <span class="font-bold text-slate-700 block">Passenger User:</span>
+                <span class="text-slate-600">Email: <code class="text-sky-700">passenger@railway.com</code></span><br>
+                <span class="text-slate-600">Password: <code class="text-sky-700">passenger123</code></span>
+            </div>
+            <div class="p-3 bg-white border border-slate-200 rounded-lg">
+                <span class="font-bold text-slate-700 block">Administrator User:</span>
+                <span class="text-slate-600">Email: <code class="text-amber-700">admin@railway.com</code></span><br>
+                <span class="text-slate-600">Password: <code class="text-amber-700">admin123</code></span>
+            </div>
+            <div class="p-3 bg-white border border-slate-200 rounded-lg">
+                <span class="font-bold text-slate-700 block">Quick PNR Enquiry:</span>
+                <span class="text-slate-600">Sample Confirmed PNR: <code class="text-emerald-700">PNR8291047</code></span><br>
+                <span class="text-slate-600">Sample Cancelled PNR: <code class="text-rose-700">PNR4829102</code></span>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

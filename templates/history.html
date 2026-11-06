@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookings — Railway Reservation System{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header Card -->
+    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900">My Booking History</h1>
+            <p class="text-xs text-slate-500 mt-1">
+                Viewing all train reservations associated with account <span class="font-semibold text-slate-700">{{ session.get('user_email') }}</span>.
+            </p>
+        </div>
+
+        <a href="{{ url_for('index') }}" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-lg shadow-sm transition self-start sm:self-auto flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Book New Ticket
+        </a>
+    </div>
+
+    <!-- Bookings List -->
+    {% if bookings %}
+        <div class="space-y-4">
+            {% for b in bookings %}
+                <div class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-sm hover:border-slate-300 transition">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2">
+                        <div class="flex items-center gap-3">
+                            <span class="text-base sm:text-lg font-black font-mono tracking-wider text-slate-900">{{ b.pnr }}</span>
+                            <span class="px-2.5 py-0.5 rounded text-[11px] font-extrabold uppercase tracking-wider {% if b.booking_status == 'CONFIRMED' %}bg-emerald-100 text-emerald-800 border border-emerald-200{% else %}bg-rose-100 text-rose-800 border border-rose-200{% endif %}">
+                                {{ b.booking_status }}
+                            </span>
+                        </div>
+                        <span class="text-xs text-slate-400">Booked on {{ b.booking_date }}</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 py-4 text-xs sm:text-sm">
+                        <div>
+                            <span class="text-slate-400 uppercase font-bold text-[10px] block">Train Service</span>
+                            <span class="font-bold text-slate-800">{{ b.train_number }} — {{ b.train_name }}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 uppercase font-bold text-[10px] block">Journey Date &amp; Class</span>
+                            <span class="font-bold text-slate-800">{{ b.journey_date }}</span>
+                            <span class="text-xs text-slate-500 block">Class: {{ b.class_code }}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 uppercase font-bold text-[10px] block">Route &amp; Passengers</span>
+                            <span class="font-semibold text-slate-800">{{ b.from_station_code }} → {{ b.to_station_code }}</span>
+                            <span class="text-xs text-slate-500 block">{{ b.passenger_count }} Passenger(s)</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 uppercase font-bold text-[10px] block">Total Fare</span>
+                            <span class="text-base font-extrabold text-emerald-700">₹{{ "%.2f"|format(b.total_fare) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
+                        <a href="{{ url_for('view_ticket', pnr=b.pnr) }}"
+                           class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            View Ticket
+                        </a>
+
+                        {% if b.booking_status == 'CONFIRMED' %}
+                            <form action="{{ url_for('cancel_ticket', pnr=b.pnr) }}" method="POST"
+                                  onsubmit="return confirm('Cancel reservation for PNR {{ b.pnr }}?');">
+                                <button type="submit"
+                                        class="px-3.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs rounded-lg transition">
+                                    Cancel
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-white border border-slate-200 rounded-xl p-12 text-center shadow-sm">
+            <span class="text-4xl block mb-3">🎫</span>
+            <h3 class="text-base font-bold text-slate-800">No Bookings Yet</h3>
+            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto mb-5">
+                You haven't reserved any train tickets yet. Search our network of trains and make your first booking today!
+            </p>
+            <a href="{{ url_for('index') }}" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-lg shadow transition">
+                Search Trains
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

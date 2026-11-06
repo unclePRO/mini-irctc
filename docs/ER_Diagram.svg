@@ -1,0 +1,393 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 1080" width="1680" height="1080" style="background:#ffffff; font-family: 'Segoe UI', Arial, sans-serif;">
+  <defs>
+    <filter id="shadow" x="-5%" y="-5%" width="115%" height="115%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15" />
+    </filter>
+  </defs>
+
+  <!-- Title & Legend -->
+  <rect x="20" y="20" width="1640" height="70" rx="8" fill="#1e293b" />
+  <text x="50" y="62" font-size="24" font-weight="bold" fill="#ffffff">RAILWAY RESERVATION SYSTEM — ER CONCEPTUAL MODEL</text>
+  <text x="1000" y="60" font-size="13" fill="#cbd5e1">Reference: S_ER Model.pptx (Chen Notation: Regular/Weak Entities, Identifying Relationships, Min-Max &amp; Cardinality)</text>
+
+  <!-- Legend Box -->
+  <g transform="translate(40, 105)">
+    <rect x="0" y="0" width="1600" height="50" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <rect x="20" y="15" width="40" height="20" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="70" y="30" font-size="12" fill="#334155">Regular Entity</text>
+
+    <rect x="180" y="13" width="44" height="24" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="183" y="16" width="38" height="18" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="235" y="30" font-size="12" fill="#334155">Weak Entity</text>
+
+    <polygon points="340,25 355,13 370,25 355,37" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+    <text x="380" y="30" font-size="12" fill="#334155">Relationship</text>
+
+    <polygon points="490,25 505,13 520,25 505,37" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/>
+    <polygon points="493,25 505,16 517,25 505,34" fill="none" stroke="#ca8a04" stroke-width="1.5"/>
+    <text x="530" y="30" font-size="12" fill="#334155">Identifying Rel.</text>
+
+    <ellipse cx="660" cy="25" rx="20" ry="12" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="690" y="30" font-size="12" fill="#334155">Attribute</text>
+
+    <ellipse cx="765" cy="25" rx="20" ry="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="795" y="30" font-size="12" text-decoration="underline" font-weight="bold" fill="#15803d">Primary Key</text>
+
+    <ellipse cx="895" cy="25" rx="20" ry="12" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+    <text x="925" y="30" font-size="12" stroke-dasharray="2,2" fill="#b91c1c">Partial Key (Discriminator)</text>
+
+    <line x1="1100" y1="25" x2="1140" y2="25" stroke="#475569" stroke-width="1.5"/>
+    <text x="1150" y="30" font-size="12" fill="#334155">Partial Participation</text>
+
+    <line x1="1290" y1="22" x2="1330" y2="22" stroke="#0f172a" stroke-width="2"/>
+    <line x1="1290" y1="26" x2="1330" y2="26" stroke="#0f172a" stroke-width="2"/>
+    <text x="1340" y="30" font-size="12" fill="#334155">Total Participation</text>
+  </g>
+
+  <!-- ==================== CONNECTING LINES ==================== -->
+  <g stroke="#64748b" stroke-width="1.5">
+    <!-- USERS to Attributes -->
+    <line x1="150" y1="260" x2="90" y2="210"/>
+    <line x1="150" y1="260" x2="180" y2="200"/>
+    <line x1="150" y1="310" x2="80" y2="350"/>
+    <line x1="150" y1="310" x2="140" y2="390"/>
+    <line x1="150" y1="310" x2="200" y2="380"/>
+    <line x1="150" y1="310" x2="80" y2="420"/>
+
+    <!-- BOOKINGS to Attributes -->
+    <line x1="470" y1="260" x2="410" y2="200"/>
+    <line x1="470" y1="260" x2="480" y2="190"/>
+    <line x1="470" y1="260" x2="550" y2="200"/>
+    <line x1="470" y1="310" x2="410" y2="360"/>
+    <line x1="470" y1="310" x2="540" y2="360"/>
+
+    <!-- PASSENGERS to Attributes -->
+    <line x1="470" y1="560" x2="330" y2="610"/>
+    <line x1="470" y1="560" x2="440" y2="620"/>
+    <line x1="470" y1="560" x2="520" y2="620"/>
+    <line x1="470" y1="560" x2="600" y2="610"/>
+
+    <!-- TRAIN_RUNS to Attributes -->
+    <line x1="840" y1="260" x2="780" y2="200"/>
+    <line x1="840" y1="260" x2="850" y2="190"/>
+    <line x1="840" y1="260" x2="920" y2="200"/>
+
+    <!-- TRAVEL_CLASSES to Attributes -->
+    <line x1="840" y1="560" x2="780" y2="620"/>
+    <line x1="840" y1="560" x2="880" y2="620"/>
+
+    <!-- OFFERS_CLASS to Attributes -->
+    <line x1="840" y1="410" x2="940" y2="380"/>
+    <line x1="840" y1="410" x2="940" y2="440"/>
+
+    <!-- TRAINS to Attributes -->
+    <line x1="1260" y1="260" x2="1200" y2="200"/>
+    <line x1="1260" y1="260" x2="1320" y2="200"/>
+
+    <!-- TRAIN_STOPS to Attributes -->
+    <line x1="1260" y1="560" x2="1400" y2="480"/>
+    <line x1="1260" y1="560" x2="1410" y2="530"/>
+    <line x1="1260" y1="560" x2="1410" y2="580"/>
+    <line x1="1260" y1="560" x2="1410" y2="630"/>
+    <line x1="1260" y1="560" x2="1400" y2="680"/>
+
+    <!-- STATIONS to Attributes -->
+    <line x1="840" y1="890" x2="730" y2="950"/>
+    <line x1="840" y1="890" x2="820" y2="960"/>
+    <line x1="840" y1="890" x2="900" y2="960"/>
+    <line x1="840" y1="890" x2="980" y2="950"/>
+  </g>
+
+  <!-- ==================== ENTITY-RELATIONSHIP EDGES ==================== -->
+  <!-- USERS - BOOKS - BOOKINGS -->
+  <line x1="220" y1="285" x2="270" y2="285" stroke="#475569" stroke-width="2"/>
+  <text x="235" y="275" font-size="11" fill="#475569">(0,N)</text>
+  <text x="245" y="300" font-size="12" font-weight="bold" fill="#1e293b">1</text>
+
+  <!-- Total Participation Bookings in BOOKS -->
+  <line x1="370" y1="283" x2="400" y2="283" stroke="#0f172a" stroke-width="2"/>
+  <line x1="370" y1="287" x2="400" y2="287" stroke="#0f172a" stroke-width="2"/>
+  <text x="375" y="275" font-size="11" fill="#475569">(1,1)</text>
+  <text x="380" y="300" font-size="12" font-weight="bold" fill="#1e293b">N</text>
+
+  <!-- BOOKINGS - CONTAINS - PASSENGERS -->
+  <line x1="468" y1="310" x2="468" y2="380" stroke="#0f172a" stroke-width="2"/>
+  <line x1="472" y1="310" x2="472" y2="380" stroke="#0f172a" stroke-width="2"/>
+  <text x="480" y="340" font-size="11" fill="#475569">(1,N) [1]</text>
+
+  <line x1="468" y1="440" x2="468" y2="510" stroke="#0f172a" stroke-width="2"/>
+  <line x1="472" y1="440" x2="472" y2="510" stroke="#0f172a" stroke-width="2"/>
+  <text x="480" y="480" font-size="11" fill="#475569">(1,1) [N]</text>
+
+  <!-- BOOKINGS - BOOKED_FOR - TRAIN_RUNS -->
+  <line x1="540" y1="283" x2="590" y2="283" stroke="#0f172a" stroke-width="2"/>
+  <line x1="540" y1="287" x2="590" y2="287" stroke="#0f172a" stroke-width="2"/>
+  <text x="548" y="275" font-size="11" fill="#475569">(1,1)</text>
+  <text x="555" y="300" font-size="12" font-weight="bold" fill="#1e293b">N</text>
+
+  <line x1="690" y1="285" x2="770" y2="285" stroke="#475569" stroke-width="2"/>
+  <text x="715" y="275" font-size="11" fill="#475569">(0,N)</text>
+  <text x="730" y="300" font-size="12" font-weight="bold" fill="#1e293b">1</text>
+
+  <!-- TRAIN_RUNS - OPERATES - TRAINS -->
+  <line x1="910" y1="283" x2="980" y2="283" stroke="#0f172a" stroke-width="2"/>
+  <line x1="910" y1="287" x2="980" y2="287" stroke="#0f172a" stroke-width="2"/>
+  <text x="925" y="275" font-size="11" fill="#475569">(1,1)</text>
+  <text x="935" y="300" font-size="12" font-weight="bold" fill="#1e293b">N</text>
+
+  <line x1="1080" y1="285" x2="1190" y2="285" stroke="#475569" stroke-width="2"/>
+  <text x="1115" y="275" font-size="11" fill="#475569">(0,N)</text>
+  <text x="1130" y="300" font-size="12" font-weight="bold" fill="#1e293b">1</text>
+
+  <!-- TRAIN_RUNS - OFFERS_CLASS - TRAVEL_CLASSES -->
+  <line x1="840" y1="310" x2="840" y2="380" stroke="#475569" stroke-width="2"/>
+  <text x="850" y="340" font-size="11" fill="#475569">(1,N) [M]</text>
+
+  <line x1="840" y1="440" x2="840" y2="510" stroke="#475569" stroke-width="2"/>
+  <text x="850" y="480" font-size="11" fill="#475569">(0,N) [N]</text>
+
+  <!-- TRAINS - HAS_STOPS - TRAIN_STOPS -->
+  <line x1="1258" y1="310" x2="1258" y2="380" stroke="#0f172a" stroke-width="2"/>
+  <line x1="1262" y1="310" x2="1262" y2="380" stroke="#0f172a" stroke-width="2"/>
+  <text x="1270" y="340" font-size="11" fill="#475569">(1,N) [1]</text>
+
+  <line x1="1258" y1="440" x2="1258" y2="510" stroke="#0f172a" stroke-width="2"/>
+  <line x1="1262" y1="440" x2="1262" y2="510" stroke="#0f172a" stroke-width="2"/>
+  <text x="1270" y="480" font-size="11" fill="#475569">(1,1) [N]</text>
+
+  <!-- TRAIN_STOPS - LOCATED_AT - STATIONS -->
+  <path d="M 1260 560 L 1260 720 L 1090 720" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+  <text x="1180" y="710" font-size="11" fill="#475569">(1,1) [N]</text>
+
+  <path d="M 990 720 L 890 720 L 890 840" fill="none" stroke="#475569" stroke-width="2"/>
+  <text x="910" y="760" font-size="11" fill="#475569">(0,N) [1]</text>
+
+  <!-- TRAINS - STARTS_AT & ENDS_AT - STATIONS -->
+  <path d="M 1310 310 L 1310 870 L 910 870" fill="none" stroke="#475569" stroke-width="1.8"/>
+  <text x="1210" y="860" font-size="11" fill="#475569">STARTS_AT (1,1) : (0,N)</text>
+
+  <!-- ==================== REGULAR ENTITIES ==================== -->
+  <!-- USERS -->
+  <g filter="url(#shadow)">
+    <rect x="80" y="260" width="140" height="50" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="150" y="291" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">USERS</text>
+  </g>
+
+  <!-- BOOKINGS -->
+  <g filter="url(#shadow)">
+    <rect x="400" y="260" width="140" height="50" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="470" y="291" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">BOOKINGS</text>
+  </g>
+
+  <!-- TRAIN_RUNS -->
+  <g filter="url(#shadow)">
+    <rect x="770" y="260" width="140" height="50" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="840" y="291" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">TRAIN_RUNS</text>
+  </g>
+
+  <!-- TRAVEL_CLASSES -->
+  <g filter="url(#shadow)">
+    <rect x="760" y="510" width="160" height="50" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="840" y="541" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">TRAVEL_CLASSES</text>
+  </g>
+
+  <!-- TRAINS -->
+  <g filter="url(#shadow)">
+    <rect x="1190" y="260" width="140" height="50" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="1260" y="291" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">TRAINS</text>
+  </g>
+
+  <!-- STATIONS -->
+  <g filter="url(#shadow)">
+    <rect x="760" y="840" width="150" height="50" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="835" y="871" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">STATIONS</text>
+  </g>
+
+  <!-- ==================== WEAK ENTITIES ==================== -->
+  <!-- BOOKING_PASSENGERS -->
+  <g filter="url(#shadow)">
+    <rect x="370" y="510" width="200" height="50" rx="4" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="375" y="515" width="190" height="40" rx="2" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="470" y="541" text-anchor="middle" font-size="13" font-weight="bold" fill="#4c1d95">BOOKING_PASSENGERS</text>
+  </g>
+
+  <!-- TRAIN_STOPS -->
+  <g filter="url(#shadow)">
+    <rect x="1170" y="510" width="180" height="50" rx="4" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="1175" y="515" width="170" height="40" rx="2" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="1260" y="541" text-anchor="middle" font-size="13" font-weight="bold" fill="#4c1d95">TRAIN_STOPS</text>
+  </g>
+
+  <!-- ==================== RELATIONSHIPS ==================== -->
+  <!-- BOOKS -->
+  <g filter="url(#shadow)">
+    <polygon points="320,260 370,285 320,310 270,285" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+    <text x="320" y="289" text-anchor="middle" font-size="11" font-weight="bold" fill="#92400e">BOOKS</text>
+  </g>
+
+  <!-- BOOKED_FOR -->
+  <g filter="url(#shadow)">
+    <polygon points="640,260 690,285 640,310 590,285" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+    <text x="640" y="289" text-anchor="middle" font-size="10" font-weight="bold" fill="#92400e">BOOKED_FOR</text>
+  </g>
+
+  <!-- OPERATES -->
+  <g filter="url(#shadow)">
+    <polygon points="1030,260 1080,285 1030,310 980,285" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+    <text x="1030" y="289" text-anchor="middle" font-size="10" font-weight="bold" fill="#92400e">OPERATES</text>
+  </g>
+
+  <!-- OFFERS_CLASS (M:N) -->
+  <g filter="url(#shadow)">
+    <polygon points="840,380 900,410 840,440 780,410" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+    <text x="840" y="414" text-anchor="middle" font-size="10" font-weight="bold" fill="#92400e">OFFERS_CLASS</text>
+  </g>
+
+  <!-- LOCATED_AT -->
+  <g filter="url(#shadow)">
+    <polygon points="1040,695 1090,720 1040,745 990,720" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+    <text x="1040" y="724" text-anchor="middle" font-size="10" font-weight="bold" fill="#92400e">LOCATED_AT</text>
+  </g>
+
+  <!-- ==================== IDENTIFYING RELATIONSHIPS ==================== -->
+  <!-- CONTAINS -->
+  <g filter="url(#shadow)">
+    <polygon points="470,380 520,410 470,440 420,410" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/>
+    <polygon points="470,386 512,410 470,434 428,410" fill="none" stroke="#ca8a04" stroke-width="1.5"/>
+    <text x="470" y="414" text-anchor="middle" font-size="10" font-weight="bold" fill="#854d0e">CONTAINS</text>
+  </g>
+
+  <!-- HAS_STOPS -->
+  <g filter="url(#shadow)">
+    <polygon points="1260,380 1310,410 1260,440 1210,410" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/>
+    <polygon points="1260,386 1302,410 1260,434 1218,410" fill="none" stroke="#ca8a04" stroke-width="1.5"/>
+    <text x="1260" y="414" text-anchor="middle" font-size="10" font-weight="bold" fill="#854d0e">HAS_STOPS</text>
+  </g>
+
+  <!-- ==================== ATTRIBUTES ==================== -->
+  <!-- USERS Attributes -->
+  <g>
+    <ellipse cx="90" cy="205" rx="42" ry="16" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="90" y="209" text-anchor="middle" font-size="11" font-weight="bold" text-decoration="underline" fill="#15803d">user_id</text>
+
+    <ellipse cx="180" cy="195" rx="35" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="180" y="199" text-anchor="middle" font-size="11" fill="#334155">email</text>
+
+    <ellipse cx="60" cy="350" rx="48" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="60" y="354" text-anchor="middle" font-size="10" fill="#334155">password_hash</text>
+
+    <ellipse cx="140" cy="390" rx="36" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="140" y="394" text-anchor="middle" font-size="11" fill="#334155">full_name</text>
+
+    <ellipse cx="210" cy="380" rx="28" ry="14" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="210" y="384" text-anchor="middle" font-size="11" fill="#334155">phone</text>
+
+    <ellipse cx="60" cy="420" rx="28" ry="14" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="60" y="424" text-anchor="middle" font-size="11" fill="#334155">role</text>
+  </g>
+
+  <!-- BOOKINGS Attributes -->
+  <g>
+    <ellipse cx="400" cy="195" rx="45" ry="16" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="400" y="199" text-anchor="middle" font-size="11" font-weight="bold" text-decoration="underline" fill="#15803d">booking_id</text>
+
+    <ellipse cx="480" cy="185" rx="28" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="480" y="189" text-anchor="middle" font-size="11" fill="#334155">pnr</text>
+
+    <ellipse cx="560" cy="195" rx="45" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="560" y="199" text-anchor="middle" font-size="10" fill="#334155">booking_date</text>
+
+    <ellipse cx="400" cy="360" rx="38" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="400" y="364" text-anchor="middle" font-size="10" fill="#334155">total_fare</text>
+
+    <ellipse cx="540" cy="360" rx="48" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="540" y="364" text-anchor="middle" font-size="10" fill="#334155">booking_status</text>
+  </g>
+
+  <!-- PASSENGERS Attributes -->
+  <g>
+    <ellipse cx="320" cy="615" rx="60" ry="16" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+    <text x="320" y="619" text-anchor="middle" font-size="11" stroke-dasharray="2,2" fill="#b91c1c">- passenger_seq -</text>
+
+    <ellipse cx="440" cy="625" rx="50" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="440" y="629" text-anchor="middle" font-size="10" fill="#334155">passenger_name</text>
+
+    <ellipse cx="525" cy="625" rx="26" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="525" y="629" text-anchor="middle" font-size="11" fill="#334155">age</text>
+
+    <ellipse cx="600" cy="615" rx="32" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="600" y="619" text-anchor="middle" font-size="11" fill="#334155">gender</text>
+  </g>
+
+  <!-- TRAIN_RUNS Attributes -->
+  <g>
+    <ellipse cx="770" cy="195" rx="38" ry="16" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="770" y="199" text-anchor="middle" font-size="11" font-weight="bold" text-decoration="underline" fill="#15803d">run_id</text>
+
+    <ellipse cx="850" cy="185" rx="42" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="850" y="189" text-anchor="middle" font-size="10" fill="#334155">journey_date</text>
+
+    <ellipse cx="930" cy="195" rx="32" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="930" y="199" text-anchor="middle" font-size="11" fill="#334155">status</text>
+  </g>
+
+  <!-- TRAVEL_CLASSES Attributes -->
+  <g>
+    <ellipse cx="770" cy="625" rx="45" ry="16" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="770" y="629" text-anchor="middle" font-size="11" font-weight="bold" text-decoration="underline" fill="#15803d">class_code</text>
+
+    <ellipse cx="875" cy="625" rx="45" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="875" y="629" text-anchor="middle" font-size="11" fill="#334155">class_name</text>
+  </g>
+
+  <!-- OFFERS_CLASS Relationship Attributes -->
+  <g>
+    <ellipse cx="990" cy="380" rx="45" ry="14" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="990" y="384" text-anchor="middle" font-size="10" fill="#4c1d95">total_capacity</text>
+
+    <ellipse cx="985" cy="440" rx="38" ry="14" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="985" y="444" text-anchor="middle" font-size="10" fill="#4c1d95">base_fare</text>
+  </g>
+
+  <!-- TRAINS Attributes -->
+  <g>
+    <ellipse cx="1195" cy="195" rx="48" ry="16" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="1195" y="199" text-anchor="middle" font-size="11" font-weight="bold" text-decoration="underline" fill="#15803d">train_number</text>
+
+    <ellipse cx="1310" cy="195" rx="42" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="1310" y="199" text-anchor="middle" font-size="11" fill="#334155">train_name</text>
+  </g>
+
+  <!-- TRAIN_STOPS Attributes -->
+  <g>
+    <ellipse cx="1470" cy="480" rx="60" ry="16" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+    <text x="1470" y="484" text-anchor="middle" font-size="11" stroke-dasharray="2,2" fill="#b91c1c">- stop_sequence -</text>
+
+    <ellipse cx="1470" cy="530" rx="45" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="1470" y="534" text-anchor="middle" font-size="10" fill="#334155">arrival_time</text>
+
+    <ellipse cx="1475" cy="580" rx="48" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="1475" y="584" text-anchor="middle" font-size="10" fill="#334155">departure_time</text>
+
+    <ellipse cx="1470" cy="630" rx="45" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="1470" y="634" text-anchor="middle" font-size="10" fill="#334155">halt_minutes</text>
+
+    <ellipse cx="1465" cy="680" rx="45" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="1465" y="684" text-anchor="middle" font-size="10" fill="#334155">distance_km</text>
+  </g>
+
+  <!-- STATIONS Attributes -->
+  <g>
+    <ellipse cx="720" cy="955" rx="45" ry="16" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="720" y="959" text-anchor="middle" font-size="11" font-weight="bold" text-decoration="underline" fill="#15803d">station_code</text>
+
+    <ellipse cx="820" cy="965" rx="45" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="820" y="969" text-anchor="middle" font-size="10" fill="#334155">station_name</text>
+
+    <ellipse cx="905" cy="965" rx="30" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="905" y="969" text-anchor="middle" font-size="11" fill="#334155">city</text>
+
+    <ellipse cx="985" cy="955" rx="32" ry="15" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="985" y="959" text-anchor="middle" font-size="11" fill="#334155">state</text>
+  </g>
+</svg>

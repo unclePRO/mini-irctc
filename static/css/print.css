@@ -1,0 +1,56 @@
+/* ==========================================================================
+   Print Stylesheet for Railway Reservation E-Ticket
+   ========================================================================== */
+
+@media print {
+  /* Hide interactive non-printable elements */
+  nav,
+  footer,
+  .no-print,
+  button,
+  .btn-print,
+  .action-buttons {
+    display: none !important;
+  }
+
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .ticket-container {
+    box-shadow: none !important;
+    border: 2px solid #000000 !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 20px !important;
+  }
+
+  .ticket-header {
+    border-bottom: 2px solid #000000 !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 15px !important;
+  }
+
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  table, th, td {
+    border: 1px solid #333333 !important;
+  }
+
+  th {
+    background-color: #f2f2f2 !important;
+    color: #000000 !important;
+  }
+
+  /* Prevent page breaks inside the ticket */
+  .ticket-container {
+    page-break-inside: avoid !important;
+  }
+}

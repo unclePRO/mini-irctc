@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Administrator Dashboard — Railway Reservation System{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <!-- Admin Header -->
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-6 sm:p-8 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <span class="px-2.5 py-1 rounded text-[11px] font-extrabold bg-amber-400/20 text-amber-300 border border-amber-400/40 uppercase tracking-widest">
+                Administrator View
+            </span>
+            <h1 class="text-2xl sm:text-3xl font-extrabold mt-2 text-white">System Operations &amp; DBMS View</h1>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">
+                Live monitoring of seat occupancy, booking revenue, and audit logs.
+            </p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-400">Logged in as: <strong class="text-amber-300">{{ session.get('user_email') }}</strong></span>
+        </div>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+            <span class="text-slate-400 uppercase font-bold text-[10px] block">Total Bookings</span>
+            <span class="text-2xl font-black text-slate-900 mt-1 block">{{ metrics.total_bookings }}</span>
+            <span class="text-[11px] text-slate-500">Across all statuses</span>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+            <span class="text-slate-400 uppercase font-bold text-[10px] block">Confirmed</span>
+            <span class="text-2xl font-black text-emerald-600 mt-1 block">{{ metrics.confirmed_bookings }}</span>
+            <span class="text-[11px] text-emerald-600 font-semibold">{{ metrics.total_passengers }} passenger(s)</span>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+            <span class="text-slate-400 uppercase font-bold text-[10px] block">Cancelled</span>
+            <span class="text-2xl font-black text-rose-600 mt-1 block">{{ metrics.cancelled_bookings }}</span>
+            <span class="text-[11px] text-slate-500">Restored to pool</span>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+            <span class="text-slate-400 uppercase font-bold text-[10px] block">Gross Revenue</span>
+            <span class="text-2xl font-black text-sky-800 mt-1 block">₹{{ "%.2f"|format(metrics.total_revenue) }}</span>
+            <span class="text-[11px] text-slate-500">From confirmed tickets</span>
+        </div>
+    </div>
+
+    <!-- Mandatory SQL VIEW Demonstration Table -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+                <div class="flex items-center gap-2">
+                    <h2 class="font-bold text-slate-900 text-sm sm:text-base">Train Occupancy Summary</h2>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-sky-100 text-sky-800 font-mono">
+                        VIEW: v_train_occupancy_summary
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">
+                    Querying the mandatory relational SQL view combining runs, trains, capacities, and booked passengers.
+                </p>
+            </div>
+            <span class="text-xs font-semibold text-slate-600">{{ occupancy|length }} Records</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead>
+                    <tr class="bg-slate-100/80 border-b border-slate-200 font-bold uppercase tracking-wider text-slate-600">
+                        <th class="py-3 px-4">Run ID</th>
+                        <th class="py-3 px-4">Train</th>
+                        <th class="py-3 px-4">Date</th>
+                        <th class="py-3 px-4 text-center">Class</th>
+                        <th class="py-3 px-4 text-right">Capacity</th>
+                        <th class="py-3 px-4 text-right">Booked</th>
+                        <th class="py-3 px-4 text-right">Available</th>
+                        <th class="py-3 px-4 text-right">Base Fare</th>
+                        <th class="py-3 px-4 text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for row in occupancy %}
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-3 px-4 font-mono font-bold text-slate-400">#{{ row.run_id }}</td>
+                            <td class="py-3 px-4 font-bold text-slate-800">
+                                {{ row.train_number }} — {{ row.train_name }}
+                            </td>
+                            <td class="py-3 px-4 font-medium text-slate-700">{{ row.journey_date }}</td>
+                            <td class="py-3 px-4 text-center font-extrabold text-sky-700">{{ row.class_code }}</td>
+                            <td class="py-3 px-4 text-right font-medium text-slate-600">{{ row.total_capacity }}</td>
+                            <td class="py-3 px-4 text-right font-bold text-amber-700">{{ row.booked_seats }}</td>
+                            <td class="py-3 px-4 text-right font-bold {% if row.available_seats > 0 %}text-emerald-600{% else %}text-rose-600{% endif %}">
+                                {{ row.available_seats }}
+                            </td>
+                            <td class="py-3 px-4 text-right font-semibold text-slate-800">₹{{ "%.2f"|format(row.base_fare) }}</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase {% if row.run_status == 'SCHEDULED' %}bg-sky-100 text-sky-800{% else %}bg-slate-100 text-slate-600{% endif %}">
+                                    {{ row.run_status }}
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Cancellation Audit Logs Table (Populated by SQL Trigger) -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+            <div>
+                <div class="flex items-center gap-2">
+                    <h2 class="font-bold text-slate-900 text-sm">Cancellation Audit Trail</h2>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-purple-100 text-purple-800 font-mono">
+                        TRIGGER: trg_booking_cancellation
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">Automated audit records generated by database trigger on status update.</p>
+            </div>
+            <span class="text-xs font-semibold text-slate-600">{{ logs|length }} Audit Entries</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead>
+                    <tr class="bg-slate-100/80 border-b border-slate-200 font-bold uppercase tracking-wider text-slate-600">
+                        <th class="py-2.5 px-4 w-16">Log #</th>
+                        <th class="py-2.5 px-4">PNR</th>
+                        <th class="py-2.5 px-4">Booking ID</th>
+                        <th class="py-2.5 px-4">Timestamp</th>
+                        <th class="py-2.5 px-4">Reason</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for l in logs %}
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-2.5 px-4 font-mono text-slate-400">#{{ l.log_id }}</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-rose-700">{{ l.pnr }}</td>
+                            <td class="py-2.5 px-4 text-slate-600">ID: {{ l.booking_id }}</td>
+                            <td class="py-2.5 px-4 text-slate-600">{{ l.cancelled_at }}</td>
+                            <td class="py-2.5 px-4 text-slate-700 font-medium">{{ l.cancellation_reason }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="py-6 text-center text-slate-400">No cancellations recorded in audit trail.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
