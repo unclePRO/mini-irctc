@@ -176,6 +176,7 @@ def init_database(seed=True, engine=None):
                     print(f"[DB INIT] Executing {seed_path}...")
                     with open(seed_path, "r", encoding="utf-8") as f:
                         cur.execute(f.read())
+                    _seed_calendar_and_demo_data(cur, is_postgres=True)
             conn.commit()
         print("[DB INIT] PostgreSQL initialization complete!")
     else:
@@ -333,76 +334,96 @@ def init_database(seed=True, engine=None):
             clean_sql = re.sub(r"SELECT\s+setval\([^;]+;", "", clean_sql, flags=re.IGNORECASE)
             cur.executescript(clean_sql)
 
-            # Generate multi-day train runs for ALL 16 trains for the next 90 days
-            print("[DB INIT] Generating scheduled runs for all 16 trains across the next 90 days...")
-            trains_list = [
-                '12302', '12301', '12394', '12393',
-                '12952', '12951', '12004', '12003',
-                '12626', '12625', '12296', '12295',
-                '12650', '12649', '12834', '12833'
-            ]
-
-            run_insert_data = []
-            cap_insert_data = []
-            run_counter = 1
-            start_date = date.today()
-
-            for day_offset in range(90):
-                current_day = (start_date + timedelta(days=day_offset)).isoformat()
-                for train_num in trains_list:
-                    run_insert_data.append((run_counter, train_num, current_day, 'SCHEDULED'))
-
-                    # Configure realistic class fares based on train type
-                    if train_num in ('12302', '12301', '12952', '12951'):  # Rajdhani Express
-                        cap_insert_data.append((run_counter, '3AC', 40, 1850.00))
-                        cap_insert_data.append((run_counter, '2AC', 20, 2650.00))
-                        cap_insert_data.append((run_counter, '1AC', 10, 4450.00))
-                    elif train_num in ('12004', '12003'):  # Shatabdi Express
-                        cap_insert_data.append((run_counter, '2AC', 45, 1150.00))
-                        cap_insert_data.append((run_counter, '1AC', 15, 1950.00))
-                    elif train_num in ('12296', '12295'):  # Sanghamitra Express (MAS <-> PNBE <-> SBC)
-                        cap_insert_data.append((run_counter, 'SL',  72, 850.00))
-                        cap_insert_data.append((run_counter, '3AC', 48, 1950.00))
-                        cap_insert_data.append((run_counter, '2AC', 24, 2850.00))
-                    else:  # Sampark Kranti / Superfast / Express
-                        cap_insert_data.append((run_counter, 'SL',  72, 650.00))
-                        cap_insert_data.append((run_counter, '3AC', 48, 1650.00))
-                        cap_insert_data.append((run_counter, '2AC', 24, 2400.00))
-
-                    run_counter += 1
-
-            cur.executemany("INSERT INTO train_runs (run_id, train_number, journey_date, status) VALUES (?, ?, ?, ?)", run_insert_data)
-            cur.executemany("INSERT INTO train_class_capacity (run_id, class_code, total_capacity, base_fare) VALUES (?, ?, ?, ?)", cap_insert_data)
-
-            # Sample Initial Bookings for Demonstration
-            # Booking 1: Confirmed Suresh Kumar on Run 1
-            cur.execute("""
-            INSERT INTO bookings (booking_id, pnr, user_id, run_id, from_station_code, to_station_code, class_code, total_fare, booking_status)
-            VALUES (1, 'PNR8291047', 2, 1, 'NDLS', 'HWH', '3AC', 3700.00, 'CONFIRMED')
-            """)
-            cur.executemany("INSERT INTO booking_passengers (booking_id, passenger_seq, passenger_name, age, gender) VALUES (?, ?, ?, ?, ?)", [
-                (1, 1, 'Suresh Kumar', 42, 'MALE'),
-                (1, 2, 'Sunita Kumar', 39, 'FEMALE')
-            ])
-
-            # Booking 2: Confirmed Rahul Sharma on Run 5
-            cur.execute("""
-            INSERT INTO bookings (booking_id, pnr, user_id, run_id, from_station_code, to_station_code, class_code, total_fare, booking_status)
-            VALUES (2, 'PNR1029384', 3, 5, 'NDLS', 'BCT', '2AC', 2550.00, 'CONFIRMED')
-            """)
-            cur.execute("INSERT INTO booking_passengers (booking_id, passenger_seq, passenger_name, age, gender) VALUES (2, 1, 'Rahul Sharma', 26, 'MALE')")
-
-            # Booking 3: Cancelled Priya Singh on Run 1
-            cur.execute("""
-            INSERT INTO bookings (booking_id, pnr, user_id, run_id, from_station_code, to_station_code, class_code, total_fare, booking_status)
-            VALUES (3, 'PNR4829102', 4, 1, 'NDLS', 'CNB', '3AC', 1850.00, 'CANCELLED')
-            """)
-            cur.execute("INSERT INTO booking_passengers (booking_id, passenger_seq, passenger_name, age, gender) VALUES (3, 1, 'Priya Singh', 24, 'FEMALE')")
-            cur.execute("INSERT INTO booking_cancellation_logs (booking_id, pnr, cancellation_reason) VALUES (3, 'PNR4829102', 'User requested online cancellation')")
+            _seed_calendar_and_demo_data(cur, is_postgres=False)
 
         conn.commit()
         conn.close()
-        print(f"[DB INIT] Database initialization complete! Seeded {len(run_insert_data)} train runs and {len(cap_insert_data)} class capacity records.")
+
+def _seed_calendar_and_demo_data(cur, is_postgres=False):
+    """
+    Populates 90 days of scheduled train runs and class capacities for all 16 trains,
+    plus initial demonstration bookings for viva inspection.
+    """
+    ph = "%s" if is_postgres else "?"
+    print("[DB INIT] Generating scheduled runs for all 16 trains across the next 90 days...")
+    trains_list = [
+        '12302', '12301', '12394', '12393',
+        '12952', '12951', '12004', '12003',
+        '12626', '12625', '12296', '12295',
+        '12650', '12649', '12834', '12833'
+    ]
+
+    run_insert_data = []
+    cap_insert_data = []
+    run_counter = 1
+    start_date = date.today()
+
+    for day_offset in range(90):
+        current_day = (start_date + timedelta(days=day_offset)).isoformat()
+        for train_num in trains_list:
+            run_insert_data.append((run_counter, train_num, current_day, 'SCHEDULED'))
+
+            # Configure realistic class fares based on train type
+            if train_num in ('12302', '12301', '12952', '12951'):  # Rajdhani Express
+                cap_insert_data.append((run_counter, '3AC', 40, 1850.00))
+                cap_insert_data.append((run_counter, '2AC', 20, 2650.00))
+                cap_insert_data.append((run_counter, '1AC', 10, 4450.00))
+            elif train_num in ('12004', '12003'):  # Shatabdi Express
+                cap_insert_data.append((run_counter, '2AC', 45, 1150.00))
+                cap_insert_data.append((run_counter, '1AC', 15, 1950.00))
+            elif train_num in ('12296', '12295'):  # Sanghamitra Express (MAS <-> PNBE <-> SBC)
+                cap_insert_data.append((run_counter, 'SL',  72, 850.00))
+                cap_insert_data.append((run_counter, '3AC', 48, 1950.00))
+                cap_insert_data.append((run_counter, '2AC', 24, 2850.00))
+            else:  # Sampark Kranti / Superfast / Express
+                cap_insert_data.append((run_counter, 'SL',  72, 650.00))
+                cap_insert_data.append((run_counter, '3AC', 48, 1650.00))
+                cap_insert_data.append((run_counter, '2AC', 24, 2400.00))
+
+            run_counter += 1
+
+    cur.executemany(f"INSERT INTO train_runs (run_id, train_number, journey_date, status) VALUES ({ph}, {ph}, {ph}, {ph})", run_insert_data)
+    cur.executemany(f"INSERT INTO train_class_capacity (run_id, class_code, total_capacity, base_fare) VALUES ({ph}, {ph}, {ph}, {ph})", cap_insert_data)
+
+    # Sample Initial Bookings for Demonstration
+    # Booking 1: Confirmed Suresh Kumar on Run 1
+    cur.execute("""
+    INSERT INTO bookings (booking_id, pnr, user_id, run_id, from_station_code, to_station_code, class_code, total_fare, booking_status)
+    VALUES (1, 'PNR8291047', 2, 1, 'NDLS', 'HWH', '3AC', 3700.00, 'CONFIRMED')
+    """)
+    cur.executemany(f"INSERT INTO booking_passengers (booking_id, passenger_seq, passenger_name, age, gender) VALUES ({ph}, {ph}, {ph}, {ph}, {ph})", [
+        (1, 1, 'Suresh Kumar', 42, 'MALE'),
+        (1, 2, 'Sunita Kumar', 39, 'FEMALE')
+    ])
+
+    # Booking 2: Confirmed Rahul Sharma on Run 5
+    cur.execute("""
+    INSERT INTO bookings (booking_id, pnr, user_id, run_id, from_station_code, to_station_code, class_code, total_fare, booking_status)
+    VALUES (2, 'PNR1029384', 3, 5, 'NDLS', 'BCT', '2AC', 2550.00, 'CONFIRMED')
+    """)
+    cur.executemany(f"INSERT INTO booking_passengers (booking_id, passenger_seq, passenger_name, age, gender) VALUES ({ph}, {ph}, {ph}, {ph}, {ph})", [
+        (2, 1, 'Rahul Sharma', 26, 'MALE')
+    ])
+
+    # Booking 3: Cancelled Priya Singh on Run 1
+    cur.execute("""
+    INSERT INTO bookings (booking_id, pnr, user_id, run_id, from_station_code, to_station_code, class_code, total_fare, booking_status)
+    VALUES (3, 'PNR4829102', 4, 1, 'NDLS', 'CNB', '3AC', 1850.00, 'CANCELLED')
+    """)
+    cur.executemany(f"INSERT INTO booking_passengers (booking_id, passenger_seq, passenger_name, age, gender) VALUES ({ph}, {ph}, {ph}, {ph}, {ph})", [
+        (3, 1, 'Priya Singh', 24, 'FEMALE')
+    ])
+    cur.execute("""
+    INSERT INTO booking_cancellation_logs (booking_id, pnr, cancellation_reason)
+    VALUES (3, 'PNR4829102', 'User requested online cancellation')
+    """)
+
+    if is_postgres:
+        cur.execute("SELECT setval('train_runs_run_id_seq', (SELECT COALESCE(MAX(run_id), 1) FROM train_runs));")
+        cur.execute("SELECT setval('bookings_booking_id_seq', (SELECT COALESCE(MAX(booking_id), 1) FROM bookings));")
+        cur.execute("SELECT setval('booking_cancellation_logs_log_id_seq', (SELECT COALESCE(MAX(log_id), 1) FROM booking_cancellation_logs));")
+
+    print(f"[DB INIT] Database initialization complete! Seeded {len(run_insert_data)} train runs and {len(cap_insert_data)} class capacity records.")
 
 if __name__ == "__main__":
     target = sys.argv[2] if len(sys.argv) > 2 else None
